@@ -3,12 +3,10 @@ package pl.marczyk.view;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
-import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
@@ -20,8 +18,10 @@ import pl.marczyk.model.Redirect;
  */
 public class MainView extends Application {
 
-    private final TableView table = new TableView();
-    ObservableList<Redirect> data = FXCollections.observableArrayList(
+    private final TableView TABLE = new TableView();
+    private Scene scene;
+
+    private final ObservableList<Redirect> data = FXCollections.observableArrayList(
             new Redirect(8080, "localhost", 8080),
             new Redirect(3389, "localhost", 3389)
     );
@@ -32,38 +32,60 @@ public class MainView extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Scene scene = new Scene(new Group());
+        scene = new Scene(new VBox(), 400, 350);
         primaryStage.setTitle("Table View");
         primaryStage.setWidth(500);
         primaryStage.setHeight(500);
 
+        createMenu();
+
+        createRedirectsTable();
+
+        primaryStage.setScene(scene);
+        primaryStage.show();
+    }
+
+    private void createMenu() {
+        MenuBar menuBar = new MenuBar();
+        Menu menuFile = new Menu("File");
+
+        MenuItem propertiesMenuItem = new MenuItem("Properties");
+        propertiesMenuItem.setOnAction((ActionEvent t) -> System.out.println("Properties clicked") );
+
+        MenuItem exitMenuItem = new MenuItem("Exit");
+        exitMenuItem.setOnAction( (ActionEvent t) -> System.exit(0) );
+
+        menuFile.getItems().addAll(propertiesMenuItem, exitMenuItem);
+        menuBar.getMenus().addAll(menuFile);
+
+        ((VBox)scene.getRoot()).getChildren().addAll(menuBar);
+    }
+
+    private void createRedirectsTable() {
         final Label label = new Label("Redirected ports");
         label.setFont(new Font("Arial", 20));
 
-        table.setEditable(false);
-        table.setPrefWidth(460);
+        TABLE.setEditable(false);
+        TABLE.setPrefWidth(460);
 
         TableColumn remotePort = new TableColumn("Remote port");
-        remotePort.setPrefWidth(table.getPrefWidth()/3);
+        remotePort.setPrefWidth(TABLE.getPrefWidth()/3);
         remotePort.setCellValueFactory(new PropertyValueFactory("remotePort"));
         TableColumn host = new TableColumn("Host");
-        host.setPrefWidth(table.getPrefWidth()/3);
+        host.setPrefWidth(TABLE.getPrefWidth()/3);
         host.setCellValueFactory(new PropertyValueFactory("host"));
         TableColumn localPort = new TableColumn("Local port");
-        localPort.setPrefWidth(table.getPrefWidth()/3);
+        localPort.setPrefWidth(TABLE.getPrefWidth()/3);
         localPort.setCellValueFactory(new PropertyValueFactory("localPort"));
 
-        table.setItems(data);
-        table.getColumns().addAll(remotePort, host, localPort);
+        TABLE.setItems(data);
+        TABLE.getColumns().addAll(remotePort, host, localPort);
 
         final VBox vbox = new VBox();
         vbox.setSpacing(5);
         vbox.setPadding(new Insets(10, 0, 0, 10));
-        vbox.getChildren().addAll(label, table);
+        vbox.getChildren().addAll(label, TABLE);
 
-        ((Group)scene.getRoot()).getChildren().addAll(vbox);
-
-        primaryStage.setScene(scene);
-        primaryStage.show();
+        ((VBox)scene.getRoot()).getChildren().addAll(vbox);
     }
 }
